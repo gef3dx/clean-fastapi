@@ -1,0 +1,7 @@
+[project]
+name = "clean-fastapi"
+version = "0.1.0"
+description = "My first FastAPI project clean architecture"
+readme = "README.md"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115.12"]
