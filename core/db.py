@@ -8,6 +8,7 @@ from sqlalchemy.ext.declarative import declared_attr
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
 from sqlalchemy.sql import func
 from sqlalchemy_utils import UUIDType
+from settings import settings
 # from users.settings import settings
 
 __all__ = (
@@ -16,7 +17,6 @@ __all__ = (
     'AsyncSession',
     'get_async_session',
 )
-
 
 POSTGRES_INDEXES_NAMING_CONVENTION = {
     'ix': '%(column_0_label)s_idx',
@@ -28,9 +28,25 @@ POSTGRES_INDEXES_NAMING_CONVENTION = {
 
 metadata = MetaData(naming_convention=POSTGRES_INDEXES_NAMING_CONVENTION)
 
-asyncio_engine = create_async_engine(
-    # settings.db.dsn, connect_args={'options': f'-csearch_path={settings.db.scheme}'}, echo=settings.debug
-)
+def create_db_engine():
+    if settings.db.provider == 'sqlite+aiosqlite':
+        # Для SQLite используем aiosqlite
+        return create_async_engine(
+            f"sqlite+aiosqlite:///{settings.db.name}",  # Используем name как путь к файлу SQLite
+            echo=settings.debug,
+            connect_args={"check_same_thread": False}  # Необходимо для async SQLite
+        )
+    elif settings.db.provider == 'postgresql+asyncpg':
+        # Для PostgreSQL (оригинальная конфигурация)
+        return create_async_engine(
+            settings.db.dsn,
+            connect_args={'options': f'-csearch_path={settings.db.scheme}'},
+            echo=settings.debug
+        )
+    else:
+        raise ValueError("Неподдерживаемый провайдер базы данных")
+
+asyncio_engine = create_db_engine()
 
 AsyncSessionFactory = async_sessionmaker(
     asyncio_engine,
@@ -45,7 +61,10 @@ class Base(AsyncAttrs, DeclarativeBase):
     metadata = metadata
 
     id: Mapped[uuid.UUID] = mapped_column(
-        UUIDType(binary=False), primary_key=True, default=uuid.uuid4, server_default=func.gen_random_uuid()
+        UUIDType(binary=False),
+        primary_key=True,
+        default=uuid.uuid4,
+        server_default=func.gen_random_uuid() if settings.db.provider != 'sqlite+aiosqlite' else None
     )
 
     @declared_attr.directive
@@ -55,7 +74,6 @@ class Base(AsyncAttrs, DeclarativeBase):
 
 async def get_async_session() -> AsyncGenerator[AsyncSession, None]:
     async with AsyncSessionFactory() as session:
-        # logger.debug(f"ASYNC Pool: {asyncio_engine.pool.status()}")
         yield session
 
 
