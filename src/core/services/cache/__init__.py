@@ -12,7 +12,7 @@ from fastapi_cache import FastAPICache
 from fastapi_cache.decorator import cache as cache
 from redis import asyncio as aioredis
 
-from settings import Settings
+from src.settings import Settings
 
 from .inmemory_cache import InMemoryCache as InMemoryCache
 from .redis_cache import RedisCache as RedisCache

@@ -3,8 +3,8 @@ from typing import Annotated
 from fastapi import Depends
 from starlette.datastructures import MutableHeaders as MutableHeaders
 
-from core.services.cache import CacheManager, CacheProtocol
-from settings import SettingsService
+from src.core.services.cache import CacheManager, CacheProtocol
+from src.settings import SettingsService
 
 
 async def get_cache_service(settings: SettingsService) -> CacheProtocol:
