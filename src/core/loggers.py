@@ -4,7 +4,7 @@ from os.path import exists, join
 
 import yaml
 
-from settings import settings
+from src.settings import settings
 
 __all__ = ('set_logging',)
 

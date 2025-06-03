@@ -2,11 +2,11 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 
-from core.loggers import set_logging
-from core.services.cache import CacheManager
-from middleware import apply_middleware
-from router import apply_routes
-from settings import settings
+from src.core.loggers import set_logging
+from src.core.services.cache import CacheManager
+from src.middleware import apply_middleware
+from src.router import apply_routes
+from src.settings import settings
 
 
 @asynccontextmanager

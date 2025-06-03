@@ -93,7 +93,7 @@ class Settings(BaseSettings):
 
     debug: bool
     base_url: str
-    base_dir: str = os.path.dirname(os.path.abspath(__file__))
+    base_dir: str = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
     secret_key: str
     cors_origins: list[str]

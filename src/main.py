@@ -1,6 +1,6 @@
 import uvicorn
 
-from bootstrap import create_app
+from src.bootstrap import create_app
 
 app = create_app()
 
